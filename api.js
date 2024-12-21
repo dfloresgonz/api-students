@@ -5,11 +5,9 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = 8001;
 
-// Middleware para parsear JSON y datos de formularios
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Conexión a la base de datos SQLite
 const db = new sqlite3.Database('./students.sqlite', (err) => {
   if (err) {
     console.error('Error connecting to SQLite database:', err.message);
@@ -18,7 +16,6 @@ const db = new sqlite3.Database('./students.sqlite', (err) => {
   }
 });
 
-// Crear tabla si no existe
 db.run(
   `CREATE TABLE IF NOT EXISTS students (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,7 +26,6 @@ db.run(
   )`
 );
 
-// Obtener todos los estudiantes
 app.get('/students', (req, res) => {
   const query = 'SELECT * FROM students';
   db.all(query, [], (err, rows) => {
@@ -41,7 +37,6 @@ app.get('/students', (req, res) => {
   });
 });
 
-// Crear un estudiante
 app.post('/students', (req, res) => {
   const { firstname, lastname, gender, age } = req.body;
   const query = 'INSERT INTO students (firstname, lastname, gender, age) VALUES (?, ?, ?, ?)';
@@ -54,7 +49,6 @@ app.post('/students', (req, res) => {
   });
 });
 
-// Obtener un estudiante por ID
 app.get('/student/:id', (req, res) => {
   const query = 'SELECT * FROM students WHERE id = ?';
   db.get(query, [req.params.id], (err, row) => {
@@ -68,7 +62,6 @@ app.get('/student/:id', (req, res) => {
   });
 });
 
-// Actualizar un estudiante por ID
 app.put('/student/:id', (req, res) => {
   const { firstname, lastname, gender, age } = req.body;
   const query = 'UPDATE students SET firstname = ?, lastname = ?, gender = ?, age = ? WHERE id = ?';
@@ -83,7 +76,6 @@ app.put('/student/:id', (req, res) => {
   });
 });
 
-// Eliminar un estudiante por ID
 app.delete('/student/:id', (req, res) => {
   const query = 'DELETE FROM students WHERE id = ?';
   db.run(query, [req.params.id], function (err) {
@@ -97,7 +89,6 @@ app.delete('/student/:id', (req, res) => {
   });
 });
 
-// Iniciar el servidor
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
